@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: aspnetcore
-        image: tejindermatharu/webapp:v2
+        image: tejindermatharu/webapp:v4
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
