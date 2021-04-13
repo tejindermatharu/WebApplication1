@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using WebApplication1.Infrastructure;
 using WebApplication1.Models;
 
 namespace WebApplication1
@@ -19,6 +20,12 @@ namespace WebApplication1
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            if (!SystemHelper.IsRunningInContainer)
+            {
+                string credential_path = Configuration["gcp_application_credentials_file_path"];
+                System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
+            }
+
             services.Configure<SampleWebSettings>(Configuration);
 
             services.AddControllersWithViews();

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using WebApplication1.Models;
+using WebApplication1.Services;
 
 namespace WebApplication1.Controllers
 {
@@ -33,6 +34,15 @@ namespace WebApplication1.Controllers
             }
 
             return View();
+        }
+
+        [Route("/Home/Test", Name = "Custom")]
+        public async Task<string> Test(MessagePayload payload)
+        {
+            var client = new PushMessageClient();
+            await client.PublishMessageWithCustomAttributesAsync(_settings.GcpProjectId, _settings.GcpTopicId, payload.Message);
+
+            return $"Message {payload.Message} published to gcp pub sub";
         }
 
         public IActionResult Privacy()

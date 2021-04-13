@@ -1,4 +1,6 @@
-﻿@{
+﻿@model WebApplication1.Models.MessagePayload
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -6,4 +8,9 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">This is a test to deploy ASP.NET Core web app in GBP kubernetes cluster version 3</a>.</p>
     <p>@ViewData["Message"]</p>
+
+    <form method="post">
+        <button asp-route="Custom">Create message for Pub Sub</button>
+        <input asp-for="Message" class="form-control" />
+    </form>
 </div>
