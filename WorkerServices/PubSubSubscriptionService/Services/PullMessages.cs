@@ -4,11 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace PubSubSubscriptionService.Services
 {
     public class PullMessages
     {
+        private readonly ILogger<Worker> _logger;
+
+        public PullMessages(ILogger<Worker> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task<int> PullMessagesAsync(string projectId, string subscriptionId, bool acknowledge)
         {
             SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
@@ -19,7 +27,8 @@ namespace PubSubSubscriptionService.Services
             Task startTask = subscriber.StartAsync((PubsubMessage message, System.Threading.CancellationToken cancel) =>
             {
                 string text = System.Text.Encoding.UTF8.GetString(message.Data.ToArray());
-                Console.WriteLine($"Message {message.MessageId}: {text}");
+               // Console.WriteLine($"Message {message.MessageId}: {text}");
+                _logger.LogInformation($"Message received {message.MessageId}: {text}");
                 Interlocked.Increment(ref messageCount);
                 return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);
             });

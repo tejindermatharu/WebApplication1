@@ -25,6 +25,8 @@ namespace WebApplication1.Controllers
 
         public async Task<IActionResult> Index()
         {
+            _logger.LogInformation("Index Method called from home controller");
+
             using (var client = new HttpClient())
             {
                 var request = new HttpRequestMessage();

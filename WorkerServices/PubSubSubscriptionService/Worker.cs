@@ -20,9 +20,11 @@ namespace PubSubSubscriptionService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _logger.LogInformation("Worker started running at: {time}", DateTimeOffset.Now);
+
             while (!stoppingToken.IsCancellationRequested)
             {
-                var pullMessages = new PullMessages();
+                var pullMessages = new PullMessages(_logger);
 
                 var message = await pullMessages.PullMessagesAsync("neat-fin-309913", "test-messaging-sub", true);
 

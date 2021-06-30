@@ -7,23 +7,32 @@ spec:
   selector:
     matchLabels:
       app: aspnetcore
-      version: v3
+      version: v4
   template:
     metadata:
       labels:
         app: aspnetcore
-        version: v3
+        version: v4
     spec:
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: pubsub-key
       containers:
       - name: aspnetcore
-        image: webapp:v3
+        image: webapp:v4
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
         # Environment variable section
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
         env:
         - name: "ASPNETCORE_ENVIRONMENT"
           value: "Development"
+        - name: "GOOGLE_APPLICATION_CREDENTIALS"
+          value: "/var/secrets/google/key.json"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -47,6 +56,40 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pubsubworker_v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pubsubworker
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: pubsubworker
+        version: v1
+    spec:
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: pubsub-key
+      containers:
+      - name: pubsubworker
+        image: pubsubworker:v4
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        # Environment variable section
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/key.json
 ---
 apiVersion: v1
 kind: Service
