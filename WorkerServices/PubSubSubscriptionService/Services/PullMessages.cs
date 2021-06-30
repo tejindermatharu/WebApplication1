@@ -24,7 +24,7 @@ namespace PubSubSubscriptionService.Services
                 return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);
             });
             // Run for 5 seconds.
-            await Task.Delay(5000);
+            await Task.Delay(50000);
             await subscriber.StopAsync(CancellationToken.None);
             // Lets make sure that the start task finished successfully after the call to stop.
             await startTask;

@@ -18,8 +18,8 @@ namespace PubSubSubscriptionService
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    string credential_path = hostContext.Configuration["gcp_application_credentials_file_path"];
-                    System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
+                    //string credential_path = hostContext.Configuration["gcp_application_credentials_file_path"];
+                    //System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
 
                     services.AddHostedService<Worker>();
                 });

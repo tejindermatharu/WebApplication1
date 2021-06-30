@@ -6,9 +6,29 @@ services:
     build:
       context: .
       dockerfile: WebApplication1/Dockerfile
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/root/neat-fin-309913-60a13a858c4ds.json
+    volumes:
+    - type: bind
+      source: ${GOOGLE_APPLICATION_CREDENTIALS}
+      target: /root/neat-fin-309913-60a13a858c4ds.json
+      read_only: True
   
   weather-service:
     image: ${DOCKER_REGISTRY-}webapi
     build:
       context: .
       dockerfile: WebApi/Dockerfile  
+
+  subscription-service:
+    image: ${DOCKER_REGISTRY-}pubsubsubscriptionservice
+    build:
+      context: .
+      dockerfile: WorkerServices/PubSubSubscriptionService/Dockerfile
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/root/neat-fin-309913-60a13a858c4ds.json
+    volumes:
+    - type: bind
+      source: ${GOOGLE_APPLICATION_CREDENTIALS}
+      target: /root/neat-fin-309913-60a13a858c4ds.json
+      read_only: True

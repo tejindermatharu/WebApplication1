@@ -27,7 +27,7 @@ namespace WebApplication1.Controllers
         {
             using (var client = new HttpClient())
             {
-                var request = new HttpRequestMessage();                
+                var request = new HttpRequestMessage();
                 request.RequestUri = new Uri($"http://{_settings.WebApiHost}/weatherforecast");
                 var response = await client.SendAsync(request);
                 ViewData["Message"] += "and " + await response.Content.ReadAsStringAsync();
