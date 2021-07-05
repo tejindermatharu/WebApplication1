@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WebApplication1.Models
 {
-    public class MessagePayload
+    public class Notification
     {
         public string Message { get; set; }
         public string Type { get; set; }

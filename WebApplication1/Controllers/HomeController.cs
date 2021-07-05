@@ -42,7 +42,8 @@ namespace WebApplication1.Controllers
         public async Task<string> Test(MessagePayload payload)
         {
             var client = new PushMessageClient();
-            await client.PublishMessageWithCustomAttributesAsync(_settings.GcpProjectId, _settings.GcpTopicId, payload.Message);
+
+            await client.PublishMessageWithCustomAttributesAsync(_settings.GcpProjectId, _settings.GcpTopicId, payload);
 
             return $"Message {payload.Message} published to gcp pub sub";
         }
