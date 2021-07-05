@@ -47,7 +47,7 @@ namespace WebApplication1
                 app.UseHsts();
             }
 
-            loggerFactory.AddGoogle(app.ApplicationServices, "neat-fin-309913");
+            loggerFactory.AddGoogle(app.ApplicationServices, "green-hall-318914");
 
             var logger = loggerFactory.CreateLogger("testtejapp");
 

@@ -23,7 +23,7 @@ namespace PubSubSubscriptionService
                 {
                     //string credential_path = hostContext.Configuration["gcp_application_credentials_file_path"];
                     //System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
-                    services.AddSingleton<ILoggerProvider>(sp => GoogleLoggerProvider.Create(sp, "neat-fin-309913"));
+                    services.AddSingleton<ILoggerProvider>(sp => GoogleLoggerProvider.Create(sp, "green-hall-318914"));
                     services.AddHostedService<Worker>();
                     // Add trace service.
                     //services.AddGoogleTrace(options =>

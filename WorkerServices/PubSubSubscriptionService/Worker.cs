@@ -26,7 +26,7 @@ namespace PubSubSubscriptionService
             {
                 var pullMessages = new PullMessages(_logger);
 
-                var message = await pullMessages.PullMessagesAsync("neat-fin-309913", "test-messaging-sub", true);
+                var message = await pullMessages.PullMessagesAsync("green-hall-318914", "test-messaging-sub", true);
 
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(1000, stoppingToken);

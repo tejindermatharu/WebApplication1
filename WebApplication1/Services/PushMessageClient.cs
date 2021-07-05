@@ -2,12 +2,20 @@
 using System.Threading.Tasks;
 using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace WebApplication1.Services
 {
     public class PushMessageClient
     {
+        private readonly ILogger _logger;
+
+        public PushMessageClient(ILogger logger)
+        {
+            _logger = logger;
+        }
+
         public async Task PublishMessageWithCustomAttributesAsync(string projectId, string topicId, object messageObj)
         {
             try
@@ -26,10 +34,11 @@ namespace WebApplication1.Services
                     }
                 };
                 string message = await publisher.PublishAsync(pubsubMessage);
-                Console.WriteLine($"Published message {message}");
+                _logger.LogInformation($"Published message {message}");
             }
             catch (Exception e)
             {
+                _logger.LogError(e, $"Error publishing to Google Pub Sub: {e.Message}");
                 throw new Exception("Error publishing to Google Pub Sub", e);
             }
         }

@@ -41,7 +41,7 @@ namespace WebApplication1.Controllers
         [Route("/Home/Test", Name = "Custom")]
         public async Task<string> Test(MessagePayload payload)
         {
-            var client = new PushMessageClient();
+            var client = new PushMessageClient(_logger);
 
             await client.PublishMessageWithCustomAttributesAsync(_settings.GcpProjectId, _settings.GcpTopicId, payload);
 

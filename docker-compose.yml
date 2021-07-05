@@ -7,11 +7,11 @@ services:
       context: .
       dockerfile: WebApplication1/Dockerfile
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/root/neat-fin-309913-60a13a858c4ds.json
+      - GOOGLE_APPLICATION_CREDENTIALS=/root/green-hall-318914-b03263ef64bc.json
     volumes:
     - type: bind
       source: ${GOOGLE_APPLICATION_CREDENTIALS}
-      target: /root/neat-fin-309913-60a13a858c4ds.json
+      target: /root/green-hall-318914-b03263ef64bc.json
       read_only: True
   
   weather-service:
@@ -20,11 +20,11 @@ services:
       context: .
       dockerfile: WebApi/Dockerfile  
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/root/neat-fin-309913-60a13a858c4ds.json
+      - GOOGLE_APPLICATION_CREDENTIALS=/root/green-hall-318914-b03263ef64bc.json
     volumes:
     - type: bind
       source: ${GOOGLE_APPLICATION_CREDENTIALS}
-      target: /root/neat-fin-309913-60a13a858c4ds.json
+      target: /root/green-hall-318914-b03263ef64bc.json
       read_only: True
 
   #subscription-service:

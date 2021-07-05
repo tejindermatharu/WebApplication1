@@ -27,9 +27,10 @@ namespace WebApi.Controllers
         {
             _logger.LogInformation("Notifiy web: Notify me request received");
 
-            var pullMessages = new PullMessages(_logger);
+            //var pullMessages = new PullMessages(_logger);
+            var pullMessages = new PullMessagesSync(_logger);
 
-            var messages = await pullMessages.PullMessagesAsync("neat-fin-309913", "test-messaging-sub2", true);
+            var messages = pullMessages.PullMessages("green-hall-318914", "test-messaging-sub2", true);
 
             return Ok(messages.ToList());
         }
