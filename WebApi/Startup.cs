@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApi.Hubs;
 
 namespace WebApi
 {
@@ -31,13 +32,15 @@ namespace WebApi
                 System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
             }
 
+            services.AddHostedService<Worker>();  // the worker will run as a background service
+            services.AddSignalR(r => r.EnableDetailedErrors = true);
             services.AddControllers();
 
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", corsPolicyBuilder =>
                 {
-                    corsPolicyBuilder.SetIsOriginAllowed(host => true)
+                    corsPolicyBuilder.WithOrigins("http://localhost:3375", "http://localhost:8080")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
@@ -59,15 +62,16 @@ namespace WebApi
 
             // Write the log entry.
             logger.LogInformation("Notify web site started. This is a log message.");
-
-            app.UseRouting();
+            
             app.UseCors("CorsPolicy");
+            app.UseRouting();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<NotifyHub>("/hubs/notify");
             });
         }
     }

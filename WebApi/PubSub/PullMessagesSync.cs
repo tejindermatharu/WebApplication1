@@ -1,4 +1,5 @@
 ﻿using Google.Cloud.PubSub.V1;
+using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -23,38 +24,38 @@ namespace WebApi.Services
         {
             SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
             SubscriberServiceApiClient subscriberClient = SubscriberServiceApiClient.Create();
-
-            // SubscriberClient runs your message handle function on multiple
-            // threads to maximize throughput.
             int messageCount = 0;
             List<Notification> notificationsList = new List<Notification>();
 
-                try
+            try
+            {
+                // Pull messages from server,
+                // allowing an immediate response if there are no messages.
+                PullResponse response = subscriberClient.Pull(subscriptionName, returnImmediately: true, maxMessages: 20);
+                // Print out each received message.
+                foreach (ReceivedMessage msg in response.ReceivedMessages)
                 {
-                    // Pull messages from server,
-                    // allowing an immediate response if there are no messages.
-                    PullResponse response = subscriberClient.Pull(subscriptionName, returnImmediately: true, maxMessages: 20);
-                    // Print out each received message.
-                    foreach (ReceivedMessage msg in response.ReceivedMessages)
-                    {
-                        string text = System.Text.Encoding.UTF8.GetString(msg.Message.Data.ToArray());
-                        Notification notification = JsonConvert.DeserializeObject<Notification>(text);
-                        _logger.LogInformation($"Notify App Message received: {msg.Message.MessageId}: {text}");
-                        Interlocked.Increment(ref messageCount);
-                        notificationsList.Add(notification);
-
-                        if (acknowledge && messageCount > 0)
-                        {
-                            subscriberClient.Acknowledge(subscriptionName, response.ReceivedMessages.Select(msg => msg.AckId));
-                        }
-                    }
-                    // If acknowledgement required, send to server.
-
+                    string text = System.Text.Encoding.UTF8.GetString(msg.Message.Data.ToArray());
+                    Notification notification = JsonConvert.DeserializeObject<Notification>(text);
+                    _logger.LogInformation($"Notify App Message received: {msg.Message.MessageId}: {text}");
+                    Interlocked.Increment(ref messageCount);
+                    notificationsList.Add(notification);
                 }
-                catch (Exception e)
+
+                // If acknowledgement required, send to server.
+                if (acknowledge && messageCount > 0)
                 {
-                    _logger.LogError(e, $"Problem parsing notification message: {e.Message}");
+                    subscriberClient.Acknowledge(subscriptionName, response.ReceivedMessages.Select(msg => msg.AckId));
                 }
+            }
+            catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.Unavailable)
+            {
+                _logger.LogError(ex, $"UNAVAILABLE due to too many concurrent pull requests pending for subscription id: {subscriptionId}: {ex.Message}");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Problem parsing notification message: {e.Message} for subscription id: {subscriptionId}");
+            }
 
             return notificationsList;
         }

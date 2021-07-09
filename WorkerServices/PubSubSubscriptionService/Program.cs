@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Google.Cloud.Diagnostics.Common;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 namespace PubSubSubscriptionService
 {
@@ -19,6 +20,12 @@ namespace PubSubSubscriptionService
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile(System.Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true" ? "envcontainer.json" : "envlocal.json",
+                        optional: false,
+                        reloadOnChange: true);
+                })
                 .ConfigureServices((hostContext, services) =>
                 {
                     //string credential_path = hostContext.Configuration["gcp_application_credentials_file_path"];
