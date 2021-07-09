@@ -7,7 +7,9 @@ namespace WebApi.Models
 {
     public class Notification
     {
-        public string Message { get; set; }
+        public string Isin { get; set; }
+        public string Counterparty { get; set; }
+        public string BuySell { get; set; }
         public string Type { get; set; }
     }
 }

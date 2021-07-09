@@ -2,9 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using WebApplication1.Models;
@@ -23,6 +21,7 @@ namespace WebApplication1.Controllers
             _settings = settingsOptions.Value;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             _logger.LogInformation("Index Method called from home controller");
@@ -30,22 +29,23 @@ namespace WebApplication1.Controllers
             using (var client = new HttpClient())
             {
                 var request = new HttpRequestMessage();
-                request.RequestUri = new Uri($"http://{_settings.WebApiHost}/weatherforecast");
+                request.RequestUri = new Uri($"http://{_settings.WebApiHost}/test");
                 var response = await client.SendAsync(request);
-                ViewData["Message"] += "and " + await response.Content.ReadAsStringAsync();
+                ViewData["ApiMessage"] += await response.Content.ReadAsStringAsync();
             }
 
             return View();
         }
 
-        [Route("/Home/Test", Name = "Custom")]
-        public async Task<string> Test(MessagePayload payload)
+        [HttpPost]
+        public async Task<IActionResult> Index(Notification payload)
         {
             var client = new PushMessageClient(_logger);
 
             await client.PublishMessageWithCustomAttributesAsync(_settings.GcpProjectId, _settings.GcpTopicId, payload);
-
-            return $"Message {payload.Message} published to gcp pub sub";
+            ViewData["Message"] += "Message with Isin:  " + payload.Isin + "...published to GCP Pub Sub.";
+     
+            return View();
         }
 
         public IActionResult Privacy()

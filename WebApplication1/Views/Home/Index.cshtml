@@ -5,14 +5,17 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">This is a test to deploy ASP.NET Core web app in GBP kubernetes cluster version 3</a>.</p>
-    <p>@ViewData["Message"]</p>
+    @*<h1 class="display-4">Welcome</h1>
+        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">This is a test to deploy ASP.NET Core web app in GBP kubernetes cluster version 3</a>.</p>
+        <p>@ViewData["Message"]</p>*@
 
     <form method="post">
 
-        <div>
-            <span>Select Type:   </span>
+        <p>@ViewData["ApiMessage"]</p>
+
+        <div style="display: flex; margin-bottom: 20px;
+">
+            <span style="margin-right: 10px;" >Select Type    :  </span>
 
             @Html.DropDownList("Type", new List<SelectListItem>
             {
@@ -20,11 +23,33 @@
                 new SelectListItem{ Text="Options", Value = "Options" }
              })
         </div>
-        <br />
-        <div>
-            <button asp-route="Custom">Create message for Pub Sub</button>
+
+        <div style="display: flex; margin-bottom: 20px;">
+            <br />
+            <input style="margin: 10px;" type="radio" asp-for="BuySell" value="Buy" />Buy<br />
+            <input style="margin: 10px;" type="radio" asp-for="BuySell" value="Sell" />Sell<br />
         </div>
+
         <br />
-        <input asp-for="Message" class="form-control" />
+
+        <div style="display: flex; margin-bottom: 20px;">
+            <label style="margin-right: 100px;" asp-for="Isin"></label>
+            <input style="width: 200px;" asp-for="Isin" class="form-control" />
+        </div>
+
+        <div style="display: flex; margin-bottom: 20px;">
+            <label style="margin-right: 30px;" asp-for="Counterparty"></label>
+            <input style="width: 200px;" asp-for="Counterparty" class="form-control" />
+        </div>
+
+        <br />
+        <div style="display: flex;">
+            <button asp-route="Custom">Publish to Pub Sub</button>
+        </div>
+
+        <div>
+            <br />
+            <p>@ViewData["Message"]</p>
+        </div>
     </form>
 </div>

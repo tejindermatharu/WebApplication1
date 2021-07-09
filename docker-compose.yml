@@ -14,7 +14,7 @@ services:
       target: /root/green-hall-318914-b03263ef64bc.json
       read_only: True
   
-  weather-service:
+  notification-service:
     image: ${DOCKER_REGISTRY-}webapi
     build:
       context: .
