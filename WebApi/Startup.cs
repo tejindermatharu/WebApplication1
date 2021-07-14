@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApi.Hubs;
+using WebApi.Services;
 
 namespace WebApi
 {
@@ -31,6 +32,12 @@ namespace WebApi
                 string credential_path = Configuration["gcp_application_credentials_file_path"];
                 System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
             }
+
+            ServiceProvider serviceProvider = services.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<PullMessages>>();
+            services.AddSingleton(typeof(ILogger), logger);
+
+            services.AddSingleton<IPullMessages, PullMessages>();
 
             services.AddHostedService<Worker>();  // the worker will run as a background service
             services.AddSignalR(r => r.EnableDetailedErrors = true);

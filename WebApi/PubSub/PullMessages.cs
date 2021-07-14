@@ -11,11 +11,11 @@ using Newtonsoft.Json;
 
 namespace WebApi.Services
 {
-    public class PullMessages
+    public class PullMessages : IPullMessages
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<PullMessages> _logger;
 
-        public PullMessages(ILogger logger)
+        public PullMessages(ILogger<PullMessages> logger)
         {
             _logger = logger;
         }

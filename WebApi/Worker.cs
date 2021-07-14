@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApi.Hubs;
+using WebApi.Models;
 using WebApi.Services;
 
 namespace WebApi
@@ -15,11 +16,16 @@ namespace WebApi
     {
         private readonly ILogger<Worker> _logger;
         private readonly IHubContext<NotifyHub, INotifyClient> _notifyHub;
+        private readonly IPullMessages _pullMessages;
+        private List<Notification> _notificationsCache;
 
-        public Worker(ILogger<Worker> logger, IHubContext<NotifyHub, INotifyClient> notifyHub)
+
+        public Worker(ILogger<Worker> logger, IHubContext<NotifyHub, INotifyClient> notifyHub, IPullMessages pullMessages)
         {
             _logger = logger;
             _notifyHub = notifyHub;
+            _pullMessages = pullMessages;
+            _notificationsCache = new List<Notification>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -28,14 +34,14 @@ namespace WebApi
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var pullMessages = new PullMessages(_logger);
+                var messages = await _pullMessages.PullMessagesAsync("green-hall-318914", "test-messaging-sub2", true);
+                _notificationsCache.AddRange(messages);
 
-                var messages = await pullMessages.PullMessagesAsync("green-hall-318914", "test-messaging-sub2", true);
-
-                if (messages.Any())
+                if (_notificationsCache.Any() && NotifyHub._userCount > 0)
                 {
                     _logger.LogInformation("Worker broadcast to clients", DateTimeOffset.Now);
-                    await _notifyHub.Clients.All.ReceiveMessage(messages.ToList());
+                    await _notifyHub.Clients.All.ReceiveMessage(_notificationsCache);
+                    _notificationsCache.Clear();
                 }
 
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
