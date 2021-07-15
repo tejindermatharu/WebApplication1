@@ -9,7 +9,9 @@ namespace WebApi.Models
     {
         public string Isin { get; set; }
         public string Counterparty { get; set; }
-        public string BuySell { get; set; }
-        public string Type { get; set; }
+        public string Trader { get; set; }
+        public string Sales { get; set; }
+        public decimal Quote { get; set; }
+        public decimal Yield { get; set; }
     }
 }

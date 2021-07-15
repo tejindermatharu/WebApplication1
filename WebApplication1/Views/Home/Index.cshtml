@@ -1,4 +1,4 @@
-﻿@model WebApplication1.Models.MessagePayload
+﻿@model WebApplication1.Models.Notification
 
 @{
     ViewData["Title"] = "Home Page";
@@ -13,34 +13,47 @@
 
         <p>@ViewData["ApiMessage"]</p>
 
-        <div style="display: flex; margin-bottom: 20px;
-">
-            <span style="margin-right: 10px;" >Select Type    :  </span>
+        @*<div style="display: flex; margin-bottom: 20px;
+        ">
+                    <span style="margin-right: 10px;" >Select Type    :  </span>
 
-            @Html.DropDownList("Type", new List<SelectListItem>
-            {
-                new SelectListItem{ Text="Order", Value = "Order" },
-                new SelectListItem{ Text="Options", Value = "Options" }
-             })
-        </div>
-
-        <div style="display: flex; margin-bottom: 20px;">
-            <br />
-            <input style="margin: 10px;" type="radio" asp-for="BuySell" value="Buy" />Buy<br />
-            <input style="margin: 10px;" type="radio" asp-for="BuySell" value="Sell" />Sell<br />
-        </div>
+                    @Html.DropDownList("Type", new List<SelectListItem>
+                    {
+                        new SelectListItem{ Text="Order", Value = "Order" },
+                        new SelectListItem{ Text="Options", Value = "Options" }
+                     })
+                </div>*@
 
         <br />
 
-        <div style="display: flex; margin-bottom: 20px;">
-            <label style="margin-right: 100px;" asp-for="Isin"></label>
-            <input style="width: 200px;" asp-for="Isin" class="form-control" />
-        </div>
+        <span style="margin-right: 100px;">RFQ Alert</span>
 
-        <div style="display: flex; margin-bottom: 20px;">
-            <label style="margin-right: 30px;" asp-for="Counterparty"></label>
-            <input style="width: 200px;" asp-for="Counterparty" class="form-control" />
-        </div>
+        <table style="border-collapse: separate; border-spacing: 0 1em;">
+            <tr style="text-align: left;">
+                <td><label style="margin-right: 100px;" asp-for="Trader"></label></td>
+                <td><input style="width: 200px;" asp-for="Trader" class="form-control" /></td>
+            </tr>
+            <tr style="text-align: left;">
+                <td><label style="margin-right: 100px;" asp-for="Sales"></label></td>
+                <td><input style="width: 200px;" asp-for="Sales" class="form-control" /></td>
+            </tr>
+            <tr style="text-align: left;">
+                <td><label style="margin-right: 100px;" asp-for="Isin"></label></td>
+                <td><input style="width: 200px;" asp-for="Isin" class="form-control" /></td>
+            </tr>
+            <tr style="text-align: left;">
+                <td><label style="margin-right: 100px;" asp-for="Counterparty"></label></td>
+                <td><input style="width: 200px;" asp-for="Counterparty" class="form-control" /></td>
+            </tr>
+            <tr style="text-align: left;">
+                <td><label style="margin-right: 100px;" asp-for="Quote"></label></td>
+                <td>@Html.EditorFor(model => model.Quote, new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.01", @value = "0" } })</td>
+            </tr>
+            <tr style="text-align: left;">
+                <td><label style="margin-right: 100px;" asp-for="Yield"></label></td>
+                <td>@Html.EditorFor(model => model.Yield, new { htmlAttributes = new { @type = "number", @min = "0", @step = "0.01", @value = "0" } })</td>
+            </tr>
+        </table>
 
         <br />
         <div style="display: flex;">
