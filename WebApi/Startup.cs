@@ -27,7 +27,7 @@ namespace WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            if (System.Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "false")
+            if (!(System.Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true"))
             {
                 string credential_path = Configuration["gcp_application_credentials_file_path"];
                 System.Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credential_path);
@@ -63,7 +63,7 @@ namespace WebApi
                 app.UseDeveloperExceptionPage();
             }
 
-            loggerFactory.AddGoogle(app.ApplicationServices, "green-hall-318914");
+            loggerFactory.AddGoogle(app.ApplicationServices, "pivotal-leaf-326613");
 
             var logger = loggerFactory.CreateLogger("testnotifyapp");
 

@@ -1,53 +1,17 @@
 ﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: aspnetcore-v1
+  name: notification-service-v1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: aspnetcore
-      version: v4
-  template:
-    metadata:
-      labels:
-        app: aspnetcore
-        version: v4
-    spec:
-      volumes:
-      - name: google-cloud-key
-        secret:
-          secretName: pubsub-key
-      containers:
-      - name: aspnetcore
-        image: webapp:v4
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 80
-        # Environment variable section
-        volumeMounts:
-        - name: google-cloud-key
-          mountPath: /var/secrets/google
-        env:
-        - name: "ASPNETCORE_ENVIRONMENT"
-          value: "Development"
-        - name: "GOOGLE_APPLICATION_CREDENTIALS"
-          value: "/var/secrets/google/key.json"
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: weather-service-v1
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app:  weather-service
+      app:  notification-service
       version: v1
   template:
     metadata:
       labels:
-        app:  weather-service
+        app:  notification-service
         version: v1
     spec:
       volumes:
@@ -55,45 +19,11 @@ spec:
         secret:
           secretName: pubsub-key
       containers:
-      - name: weather-service
-        image: tejindermatharu/webapi:v2
+      - name: notification-service
+        image: eu.gcr.io/pivotal-leaf-326613/webapi:v2
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
-       volumeMounts:
-        - name: google-cloud-key
-          mountPath: /var/secrets/google
-        env:
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/secrets/google/key.json
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: pubsubworker_v1
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: pubsubworker
-      version: v1
-  template:
-    metadata:
-      labels:
-        app: pubsubworker
-        version: v1
-    spec:
-      volumes:
-      - name: google-cloud-key
-        secret:
-          secretName: pubsub-key
-      containers:
-      - name: pubsubworker
-        image: pubsubworker:v4
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 80
-        # Environment variable section
         volumeMounts:
         - name: google-cloud-key
           mountPath: /var/secrets/google
@@ -104,27 +34,63 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: weather-service
+  name: notification-service
   labels:
-    app: weather-service
+    app: notification-service
 spec:
   type: LoadBalancer
   ports:
   - port: 80
     name: http
   selector:
-    app: weather-service
+    app: notification-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notificationapi-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notificationapi
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: notificationapi
+        version: v1
+    spec:
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: pubsub-key
+      containers:
+      - name: notificationapi
+        image: eu.gcr.io/pivotal-leaf-326613/webapp:v2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        # Environment variable section
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/secrets/google/key.json
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: aspnetcore-service
+  name: notificationapi-service
   labels:
-    app: aspnetcore
+    app: notificationapi
 spec:
   type: LoadBalancer
   ports:
   - port: 80
     name: http
   selector:
-    app: aspnetcore
+    app: notificationapi

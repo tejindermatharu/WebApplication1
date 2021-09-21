@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using WebApi.Models;
 using Newtonsoft.Json;
+using Grpc.Core;
 
 namespace WebApi.Services
 {
@@ -26,9 +27,11 @@ namespace WebApi.Services
             SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
             // SubscriberClient runs your message handle function on multiple
             // threads to maximize throughput.
-            int messageCount = 0;
             var notificationsBag = new ConcurrentBag<Notification>();
-            Task startTask = subscriber.StartAsync((PubsubMessage message, System.Threading.CancellationToken cancel) =>
+
+            try
+            {
+                Task startTask = subscriber.StartAsync((PubsubMessage message, System.Threading.CancellationToken cancel) =>
             {
                 try
                 {
@@ -46,11 +49,22 @@ namespace WebApi.Services
                 return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);
 
             });
+
             // Run for 5 seconds./.
             await Task.Delay(5000);
             await subscriber.StopAsync(CancellationToken.None);
             // Lets make sure that the start task finished successfully after the call to stop.
             await startTask;
+
+            }
+            catch (Grpc.Core.RpcException ex) when (ex.Status.StatusCode == StatusCode.Unavailable)
+            {
+                _logger.LogError(ex, $"UNAVAILABLE due to too many concurrent pull requests pending for subscription id: {subscriptionId}: {ex.Message}");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Problem parsing notification message: {e.Message} for subscription id: {subscriptionId}");
+            }
             return notificationsBag;
         }
     }

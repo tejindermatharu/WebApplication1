@@ -26,7 +26,6 @@ namespace PubSubSubscriptionService.Services
             SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
             // SubscriberClient runs your message handle function on multiple
             // threads to maximize throughput.
-            int messageCount = 0;
             var notificationsBag = new ConcurrentBag<Notification>();
             Task startTask = subscriber.StartAsync((PubsubMessage message, System.Threading.CancellationToken cancel) =>
             {

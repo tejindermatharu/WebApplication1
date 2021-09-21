@@ -34,19 +34,24 @@ namespace WebApi
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                var messages = await _pullMessages.PullMessagesAsync("green-hall-318914", "test-messaging-sub2", true);
+                var messages = await _pullMessages.PullMessagesAsync("pivotal-leaf-326613", "test-messaging-sub2", true);
                 _notificationsCache.AddRange(messages);
 
-                if (_notificationsCache.Any() && NotifyHub._userCount > 0)
+                if (NotifyHub._userCount == 0)
+                {
+                    _logger.LogWarning("NO CONNECTED CLIENTS ON THIS HUB", DateTimeOffset.Now);
+                }
+                else if (_notificationsCache.Any())
                 {
                     _logger.LogInformation("Worker broadcast to clients", DateTimeOffset.Now);
                     await _notifyHub.Clients.All.ReceiveMessage(_notificationsCache);
                     _notificationsCache.Clear();
                 }
-
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
             }
+
+            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            await Task.Delay(1000, stoppingToken);
         }
     }
+
 }
